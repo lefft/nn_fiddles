@@ -51,3 +51,8 @@
 
 #### 2.3 other misc things to not forget 
 
+
+
+
+### misc notes, reminders, etc. 
+
