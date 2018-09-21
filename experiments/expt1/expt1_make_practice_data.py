@@ -28,11 +28,12 @@ import pandas as pd
 
 # note that kaggle test sets don't have labels (eval in kaggle)
 # test_file = '../../../data/kaggle_rotten_tomatoes/test.tsv'
-train_file = '../../../data/kaggle_rotten_tomatoes/train.tsv'
+train_file = 'data/from_kaggle/train.tsv'
 prepped_outfile = 'data/rottentom_phrases_prepped.csv'
 
 
 dat = pd.read_csv(train_file, sep='\t')
+dat.head(10)
 
 # check that phrases don't repeat (cd make problem impossible)
 # dat.apply(lambda col: len(np.unique(col)) == dat.shape[0])
