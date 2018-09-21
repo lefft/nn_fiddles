@@ -41,14 +41,12 @@ other relevant resources:
 
 '''
 
-l = ['elem1', 'elem2', 'elem3']
-for x, y in enumerate(l):
-  print(f'x = `{x}` (type `{type(x)}`)', 
-        f'y = `{y}` (type `{type(y)}`)', '', sep='\n')
 
 
 ### 1. imdb data that ships w keras ------------------------------------------
+import numpy as np
 import tensorflow as tf
+
 
 # load imdb sentiment data 
 imdb = tf.keras.datasets.imdb
