@@ -1,58 +1,229 @@
-## neural net example walkthrus 
-###### [last update: sept04/2018] 
+## text classification fiddle repo
+###### currently working on expt1 [updated: sept26/2018]
+
+next steps for expt1: 
+
+- [ ] develop a few nn models, 
+- [ ] optimize params for sklearn models
+- [ ] tune nn models 
+- [ ] create performance curves 
+
+first steps for expt2: 
+
+- [ ] build datasets 
+- [ ] expt design sketch 
 
 
-### 1. `TODO` 
+<br>
 
-- [ ] clean up `examples/` subdirs, prepping for writeups 
-- [ ] add ex that uses embeddings from `examples/train_w2v_embeddings/`
-- [ ] put up this repo w example fiddles 
-- [ ] get w al re. planning 
-- [ ] set up actual shared proj repo at work 
-
-
-
-
-### 2. misc notes, links, etc. (remove from readme when final) 
-
-#### 2.1 useful reference materials (vids, tutes, moocs, etc.) 
-
-###### deep learning 'hello world' (w keras + tf)
-- nice walkthru w mnist ocr data: https://medium.com/the-andela-way/deep-learning-hello-world-e1fc53ea888
-- associated repo w data + code + fitted model obj: https://github.com/sirghiny/mnist
-- note: need to be able to read/write hdf5 data files to play w the model obj. for r, see: https://stackoverflow.com/questions/15974643/how-to-deal-with-hdf5-files-in-r
-
-###### keras text clf example vids 
-- [pycon vid](https://www.youtube.com/watch?v=KcS6nVUT3Gc), nov2017, 39m40s **[relevant]**
-- [intro w/example vid](https://www.youtube.com/watch?v=ZmCzrPVzDQI), mar2018, 57m35s
-
-###### conceptual + theoretical intro vids 
-- [excellent vid series](https://www.youtube.com/playlist?list=PLxt59R_fWVzT9bDxA76AHm3ig0Gg9S3So) on intro to neural nets **[high quality]** 
-
-###### other vids to watch 
-
-- [tf fivemin](https://www.youtube.com/watch?v=2FmcHiLCwTU)
-- [quick nn](https://www.youtube.com/watch?v=p69khggr1Jo)
-- [fivemin rnn](https://www.youtube.com/watch?v=cdLUzrjnlr4)
-- [sentdex dl](https://www.youtube.com/watch?v=wQ8BIBpya2k)
-- [text dl simple](https://www.youtube.com/watch?v=Io0VfObzntA)
-- [text dl gentle](https://www.youtube.com/watch?v=Xgk1w0Vdx-0)
+- expt1: movie reviews sentiment classification (varying text length) 
+- expt2: topic detection in social media posts (varying train n) 
+- and maybe an expt3(?) varying class distribution 
 
 
 
-#### 2.2 packages etc. to check out 
+<br><br><br>
 
-- `mittens` package -- nice + allegedly fast [GloVe implementation](https://github.com/roamanalytics/mittens) in py/tf
-- [gensim w2v docs](https://radimrehurek.com/gensim/models/word2vec.html)
-- [full ex](http://kavita-ganesan.com/gensim-word2vec-tutorial-starter-code/#.W42P05MzpTY) of training w2v embeddings via `gensim`
-- [another walkthru](https://rare-technologies.com/word2vec-tutorial/) -- not as good but has a useful ex
-- [text2vec docs](http://text2vec.org/glove.html) for if wanna play w this in R 
-- [nitty gritty](https://towardsdatascience.com/how-to-train-custom-word-embeddings-using-gpu-on-aws-f62727a1e3f6) of training embeddings 
+### expt 1 notes 
 
-#### 2.3 other misc things to not forget 
+#### `TODO`
+
+- [ ] modularize oob script + write cli (see TODO in header)
+- [ ] add keras mods to oob script 
+- [ ] write grid search function 
+- [ ] specify and search param spaces for sklearn models 
+- [ ] figure out tuning for keras models 
+- [ ] document all code thoroughly 
+- [ ] sketch model evaluation in step 4. below 
+- [ ] ... 
 
 
 
 
-### misc notes, reminders, etc. 
 
+#### objectives 
+
+- want to know if there is an effect of text length on sentiment classification difficulty
+- if so, want to know how this interacts with classifier type (neural net-based versus others)
+- operationalized: create accuracy/F1 curves across text length subsets, w separate lines for (tuned) `sklearn` models and for a few tuned `keras` nn models
+
+
+
+
+
+#### associated files 
+
+###### source 
+
+- `expt1_explore_imdb.rmd`: fiddling area + scratchpad
+- `expt1_make_practice_data.py`: reformat rotten tomatoes data for fiddling 
+- `expt1_oob_models.py`: fit-eval some out-of-box classifiers on decoded imdb data
+- `expt1_prep_imdb_data.py`: decode `keras.datasets.imdb`, add fields for word count and length bin (quartile) 
+- `expt1_sketch.py`: sketchpad for fiddling with keras models 
+
+
+###### data 
+
+- `data/imdb_decoded.csv`: prepped data to use for expt1 (should confirm)
+- `rottentom_kaggle-train.tsv`: kaggle rotten tomatoes train subset (for creating practice data)
+- `rottentom_phrases_prepped.csv`: practice data for quick model dev (convenient length variation)
+
+
+
+
+
+
+
+#### expt format sketch 
+
+here is a bare-bones sketch of what the first experiment will be like. 
+note that important details are omitted in this overview. 
+details will be filled in as we begin setting the experiment up. 
+
+relevant details that are omitted: 
+
+- text preprocessing 
+- choice of performance metric 
+- cross-validated performance metrics 
+- hyperparameter tuning/model selection 
+- network structure for neural net models 
+- more rigorous test/train/eval splitting strategy 
+- stratification of tt-split by label 
+
+
+
+###### 1. stratified train-test split 
+
+here we split the available data into train and test sets, 
+stratifying by the review length. since length (in words) is 
+a quantity, we need to bin it before stratification is possible. 
+
+call the complete set of available data `docs`. 
+
+associate a boolean label `y_doc` with each `doc in docs`. 
+call the complete set of labels `ys`. 
+
+assume that we can always co-index `docs` with `ys` so that 
+`ys[i]` is the label for `docs[i]` for `i in 1:len(docs)`. 
+
+assume that when `doc` is in some relevant subset, 
+there is a corresponding subset of labels containing `y_doc`. 
+
+define the *length* of a review `doc in docs` as its word-count. 
+
+
+let `C` be the following set of length categories (first-pass). 
+
+- `C[0]` = 0-49 words
+- `C[1]` = 50-99 words
+- `C[2]` = 100-149 words
+- `C[3]` = 150-199 words
+- `C[4]` = 200+ words
+
+
+place each review into its appropriate length category `c in C`. 
+
+call the set of length-`c` reviews `docs_c` for `c in C`. 
+
+for `c in C`: 
+
+- randomly put 30% of `docs_c` into `docs_c[test]` 
+- put the remaining 70% into `docs_c[train]` 
+
+
+for convenience, assume `len(docs_c) == 100` for `c in C`. 
+
+let `ys_c` be the set of labels for `docs_c`. 
+
+let `docs[test]` be the union of `docs_c[test]` over `C`. 
+let `docs[train]` be the union of `docs_c[train]` over `C`. 
+
+then `len(docs[test]) == 30*5 == 150`. 
+then `len(docs[train]) == 70*5 == 350`. 
+
+
+
+
+###### 2. define range of classifiers to consider 
+
+let `f_*: str --> bool` be a binary classifier over strings. 
+
+we'll assess the performance of six different values of `*`:
+
+- `f_logreg` is a logistic regression classifier; 
+- `f_svm` is a support-vector classifier; 
+- `f_mnb` is a multinomial naive bayes classifier; 
+- `f_nn1` is a neural net-based classifier; 
+- `f_nn2` is another nn-based classifier (w diff structure); and
+- `f_nn3` is yet another nn-based classifier w diff structure. 
+
+
+define `F = {f_logreg,f_svm,f_mnb,f_nn1,f_nn2,f_nn3}`. 
+
+
+
+###### 3. define experiment routine 
+
+want to generate a curve across `C` for each `f in F`. 
+
+- x-axis: indices of `C` -- `[0,1,2,3,4]` (or length upper-bound). 
+- y-axis: some classification performance metric (prob F1 score). 
+
+
+to do this, fit each `f` to each subset `docs_c`.  
+
+
+```
+### pseudocode walkthru of basic idea 
+### (no need to stick to specific implementation)
+### 
+
+# dict holding performance curves for each clf 
+performance_curves = {}
+
+for f in F:
+    # initialize list to hold scores across `C` 
+    f_clf_scores = []
+
+    for c in C: 
+        # split `docs_c` and `ys_c` into test and train subsets  
+        train_docs, train_ys = docs_c[train], ys_c[train]
+        test_docs, test_ys = docs_c[test], ys_c[test]
+
+        # train `f` on the train docs and train labels 
+        f_trained = f.train(train_docs, train_ys)
+
+        # generate predictions over the test docs 
+        f_preds = f_trained.predict(test_docs)
+
+        # compare test predictions to test labels 
+        f_performance_on_c = performance(f_preds, test_ys)
+
+        # add the current performance metric to current curve 
+        f_clf_scores.append(f_performance_on_c)
+
+    # create dict entry for `f`, holding its curve across `C` 
+    performance_curves[f] = f_clf_scores
+
+```
+
+
+###### 4. create performance curves 
+
+`TODO`: fill in steps/outline sketch!  
+
+
+
+
+
+
+
+
+
+<br><br><br>
+
+### expt 2 notes 
+
+#### `TODO`
+
+- [ ] get started! 

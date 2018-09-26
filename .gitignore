@@ -4,4 +4,5 @@
 **/.DS_Store
 scratch
 reference/chollet2018-DLwP.pdf
+experiments/expt1/results
 experiments/expt1/data/imdb_decoded.csv

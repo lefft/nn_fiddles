@@ -1,11 +1,11 @@
 '''
 this script preps the kaggle rotten tomatoes train subset for experimentation.
 
-data source: https://www.kaggle.com/c/sentiment-analysis-on-movie-reviews/data
+source: https://www.kaggle.com/c/sentiment-analysis-on-movie-reviews/data
 
 
 the output of this script is a .csv written to: 
-  <proj-root>/data/prepped/expt1/imdb_phrases.csv
+  'data/rottentom_phrases_prepped.csv'
   
 the output table has the following columns:
   - id (int):           unique phrase identifier 
@@ -15,10 +15,15 @@ the output table has the following columns:
   - is_positive (bool): binary label (**to predict from `text`**) 
 
 
-NOTE: the resulting dataset has some weird properties, so it should **only** 
-      be used to prep the experiment code so that when we have a good, solid 
-      dataset, we can just plug it into the scaffolding we build while using 
-      this dataset. 
+NOTE:   the resulting dataset has some weird properties, 
+        so should **only** be used to prep experiment code so that 
+        when we have a good, solid dataset, we can just plug it into 
+        the scaffolding we build while using this dataset. 
+
+UPDATE: going to use decoded version of `keras.datasets.imdb` 
+        in file 'data/imdb_decoded.csv' 
+        (generate the csv with script `expt1_prep_imdb_data.py`)
+
 '''
 
 import numpy as np
@@ -28,7 +33,7 @@ import pandas as pd
 
 # note that kaggle test sets don't have labels (eval in kaggle)
 # test_file = '../../../data/kaggle_rotten_tomatoes/test.tsv'
-train_file = 'data/from_kaggle/train.tsv'
+train_file = 'data/rottentom_kaggle-train.tsv'
 prepped_outfile = 'data/rottentom_phrases_prepped.csv'
 
 

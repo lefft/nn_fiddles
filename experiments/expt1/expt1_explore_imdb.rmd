@@ -1,11 +1,13 @@
 ---
 title: 'expt1: text length and clf accuracy'
-subtitle: 'reggie ml versus neural nets'
+subtitle: 'explore data, compare reggie ml versus nn models'
 author: '`tjleffel@gmail.com`'
 date: '`r Sys.Date()`'
 output: html_document
 ---
 
+
+### 1. inspect length + label distros 
 
 ```{r}
 lefftpack::lazy_setup()
@@ -62,6 +64,29 @@ dat %>% group_by(length_bin) %>%
   summarize(prop_yes = mean(as.numeric(label))) %>% ungroup() %>% 
   ggplot(aes(x=length_bin, fill=length_bin, y=prop_yes)) + 
   geom_bar(stat='identity', alpha=.75)
+```
+
+```{r}
+dat %>% group_by(length_bin, subset) %>% 
+  summarize(prop_yes = mean(as.numeric(label))) %>% ungroup() %>% 
+  ggplot(aes(x=length_bin, fill=subset, y=prop_yes)) + 
+  geom_bar(stat='identity', position='dodge', alpha=.75)
+
+
+dat %>% group_by(length_bin, subset) %>% count() %>% ungroup() %>% 
+  ggplot(aes(x=length_bin, fill=subset, y=n)) + 
+  geom_bar(stat='identity', position='dodge', alpha=.75)
+
+```
+
+
+
+### 2. evaluate sklearn model performance on 
+
+```{r}
+# TODO: START THIS! (PUT STUFF IN RESULTS/ DIR, SEPT22)
+
+
 ```
 
 
