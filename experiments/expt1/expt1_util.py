@@ -13,8 +13,53 @@ should still investigate:
   - do we lose info from using binary instead of counts?? 
   - ... 
 
+TODO, oct11: 
+  - [ ] rewrite func for corpus ~~> dtm transform
+  - [ ] want params for `mode`, vocab size, preprocessing, etc. 
+  - [ ] maybe params for int encode or not?! idk... 
+  - [ ] write useful docstrings throughout 
+  - [ ] func to preprocess text (lowercase, remove punct, etc.)
+  - [ ] want to have a set of nice viz functions 
+  - [ ] ... 
+
 '''
 
+
+from keras.preprocessing.text import Tokenizer
+
+
+### TODO: START HERE!!! THEN WRITE DOCSTRING + TEST 
+def docs_to_dtm(docs, mode='binary', num_words=None, preprocessor=None):
+  '''
+  transform a set of documents (corpus) into a document-term matrix. 
+  '''
+  # instantiate Tokenizer class (`num_words` to restrict vocab size)
+  tokenizer = Tokenizer(num_words=num_words)
+  
+  # extract vocab and count words (makes several attrs available) 
+  tokenizer.fit_on_texts(docs)
+  
+  # integer encode the documents 
+  docs_int_encoded = tokenizer.texts_to_sequences(docs)
+  
+  # transform encoded docs into a DTM (default is binary)
+  # `mode` can be one of "binary", "count", "tfidf", "freq"
+  dtm = tokenizer.sequences_to_matrix(docs_int_encoded, mode=mode)
+  
+  return dtm
+
+
+
+
+
+
+
+
+
+
+
+
+###### BELOW HERE IS PRE-OCT11 -- WHEN ABOVE IS READY, ELIMINATE THIS 
 import numpy as np
 from keras.preprocessing.text import Tokenizer
 

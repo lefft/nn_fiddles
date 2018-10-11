@@ -29,7 +29,7 @@ from sklearn.metrics import precision_score, recall_score
 
 
 
-### load data ------------------------------------------------------
+### load data ----------------------------------------------------------------
 data_file = 'data/imdb_decoded.csv'
 dat = pd.read_csv(data_file)
 
@@ -50,7 +50,7 @@ test_labels = list(dat.label[dat.subset=='test'])
 
 
 
-### preprocess data ------------------------------------------------
+### preprocess data ----------------------------------------------------------
 
 # TODO: EITHER JUST USE keras.imdb.load_imdb() OR RE-ENCODE AS INTS...
 # 
@@ -124,12 +124,14 @@ training_history = model.fit(partial_x_train, partial_y_train,
 
 ### generate model predictions -----------------------------------------
 def prob_to_binary(prob, threshold=.5, ret_type=bool):
+  # TODO: MOVE THIS TO UTIL MODULE 
+  # TODO: require that `ret_type` is bool, int, float, or np numeric type
   assert 0 <= prob <= 1
   assert 0 <= threshold <= 1
   return ret_type(prob > threshold)
 
 
-# TODO: does a keras.model instance have a .predict method?! 
+
 test_probs = model.predict(x_test)
 test_preds_bool = [prob_to_binary(prob) for prob in test_probs]
 # test_preds_int = [prob_to_binary(prob, ret_type=int) for prob in test_probs]
