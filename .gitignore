@@ -2,6 +2,7 @@
 **/__pycache__
 **/*.html
 **/.DS_Store
+notes.md
 scratch
 ignore
 reference/chollet2018-DLwP.pdf

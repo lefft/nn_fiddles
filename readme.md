@@ -1,4 +1,4 @@
-## text classification fiddle repo
+## neural nets fiddle repo `¯\_(ツ)_/¯`
 ###### currently working on expt1 [updated: sept26/2018]
 
 next steps for expt1: 
