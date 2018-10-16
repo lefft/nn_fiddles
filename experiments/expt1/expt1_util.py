@@ -29,9 +29,18 @@ from keras.preprocessing.text import Tokenizer
 
 
 ### TODO: START HERE!!! THEN WRITE DOCSTRING + TEST 
-def docs_to_dtm(docs, mode='binary', num_words=None, preprocessor=None):
+def docs_to_dtm(docs, mode='binary', num_words=None):
   '''
   transform a set of documents (corpus) into a document-term matrix. 
+  
+  TODO: 
+    - this needs to have vocab in internal state, so that train/test 
+      splits can be done w/o having to use different vocabs, etc. ...
+    - so this shd prob be a wrapper class just like the clf's in expt1.ipynb
+    - implement a callable `preprocessor` param for e.g. lowercasing 
+      , preprocessor=None
+    - also want to be able to query the word index to see term-int mappings 
+    - ... 
   '''
   # instantiate Tokenizer class (`num_words` to restrict vocab size)
   tokenizer = Tokenizer(num_words=num_words)
@@ -61,6 +70,7 @@ def docs_to_dtm(docs, mode='binary', num_words=None, preprocessor=None):
 
 ###### BELOW HERE IS PRE-OCT11 -- WHEN ABOVE IS READY, ELIMINATE THIS 
 import numpy as np
+from typing import List
 from keras.preprocessing.text import Tokenizer
 
 
