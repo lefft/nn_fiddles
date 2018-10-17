@@ -27,7 +27,7 @@ from keras.datasets import imdb
 
 
 
-outfile = 'data/imdb_decoded.csv'
+outfile = '../data/imdb_decoded.csv'
 
 # load data 
 (train_data, train_labels), (test_data, test_labels) = imdb.load_data()

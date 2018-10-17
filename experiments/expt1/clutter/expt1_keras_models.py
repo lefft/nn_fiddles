@@ -30,7 +30,7 @@ from sklearn.metrics import precision_score, recall_score
 
 
 ### load data ----------------------------------------------------------------
-data_file = 'data/imdb_decoded.csv'
+data_file = '../data/imdb_decoded.csv'
 dat = pd.read_csv(data_file)
 
 print(f'loaded {dat.shape[0]}x{dat.shape[1]} data') 

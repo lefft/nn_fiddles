@@ -17,6 +17,7 @@ observations:
 TODO: 
   - modularize this, write argparse cli to vary metric/vect/etc.
   - integrate keras example from `expt1_sketch.py` next!!! 
+  - migrate this code to nb's or a module 
   - eliminate annoying SGD future warning (but no probs)
   - note which clf's involve rng (e.g. perceptron + sgd, not logreg)
   - automatically freeze rng seed when needed  
