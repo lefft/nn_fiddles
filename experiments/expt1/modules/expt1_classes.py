@@ -12,7 +12,7 @@ Methods:
 Convenience wrapper to keras.models.Sequential models. 
 Methods: 
   - .train(train_X, train_y, valset_prop, epochs, batch_size)
-  - .predict(test_X, pred_postprocessor=lambda x: x)
+  - .predict(test_X, pred_flattener=lambda x: x)
   - .add_layers(layers_list, kwargs_list)
   - .compile_model(optimizer, loss, metrics)
 
@@ -137,11 +137,11 @@ class TypeB():
     trn_y, val_y = self.train_y[valset_size:], self.train_y[:valset_size]
     self.history = self.model.fit(trn_X, trn_y, 
                                   epochs=epochs, batch_size=batch_size, 
-                                  validation_data=(val_X, val_y), verbose=2)
+                                  validation_data=(val_X, val_y), verbose=1)
   
-  def predict(self, test_X, pred_postprocessor=lambda x: x):
+  def predict(self, test_X, pred_flattener=lambda x: x):
     test_probs = self.model.predict(test_X)
-    test_preds = [pred_postprocessor(prob) for prob in test_probs]
+    test_preds = [pred_flattener(prob) for prob in test_probs]
     return test_preds
 
 
