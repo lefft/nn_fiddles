@@ -1,18 +1,39 @@
-'''
-this script decodes the imdb movie reviews data in `keras.datasets.imdb`
+'''Prepare IMDB sentiment dataset for Experiment 1
 
-they ship coded as lists of integers, but here we convert them back 
-to their original (preprocessed) texts. we adapt the strategy from 
-DLwP, page 73 for decoding reviews. 
+This script decodes and reformats the IMDB movie reviews sentiment 
+dataset and writes the reformatted version to a .csv file. The 
+resulting rectangular format makes the data easier to experiment with, 
+and makes it possible for a user to actually read/inspect the reviews 
+while experimenting with them. Metadata fields about the length (in words)
+of each review are also calculated and included in the output. 
 
-the dict returned by `imdb.get_word_index()` is a mapping from words 
-to their indices. so we extract the keys from the index lists, and 
-then join them together with ' ' to recover the reviews. after that, 
-we create a pandas.DataFrame holding the review, the associated 
-label (positive/negative), and a column indicating whether the 
-review came as part of the test set or the train set. 
+The output file `imdb_decoded.csv` has 50k rows and the following fields: 
 
-the decoded reviews are saved to 'data/imdb_decoded.csv'
+  - `subset`: indicates train/test status (as in `keras.datasets.imdb`)
+  - `length`: number of words in the review 
+  - `length_bin`: length-quartile of the review (with this dataset)
+  - `label`: binarized sentiment of the review (1=positive, 0=negative) 
+  - `text`: the text of the review, preprocessed in the following way:
+      - lowercased
+      - most punctuation removed (apostrophes, quotes preserved)
+      - TODO -- truncated to ??? characters
+
+
+NOTE: The IMDB dataset ships with Keras's `keras.datasets` module, and 
+can be accessed by calling `keras.datasets.imdb.load_data()`. However, 
+in this version of the data, reviews have already been integer-encoded, 
+which makes it impossible for the user to peruse the actual review texts. 
+This script converts the IMDB reviews back to strings of (preprocessed) 
+English text, and adds a couple of useful meta-data fields.
+
+
+TODO: 
+  - write argparse CLI w just a couple options 
+  - modify refs to this script as appropriate (bc cli)
+  - shuffle data w frozen rng seed before write 
+  - consider getting the *really* original version of this dataset 
+  - consider including identifiers for each review (for introspection etc.)
+  - ...
 '''
 
 import re
@@ -29,7 +50,7 @@ from keras.datasets import imdb
 
 outfile = '../data/imdb_decoded.csv'
 
-# load data 
+# load data (each review is encoded as a sequence of integer indices) 
 (train_data, train_labels), (test_data, test_labels) = imdb.load_data()
 
 # dict mapping words to their indices 
@@ -38,9 +59,9 @@ word_index = imdb.get_word_index()
 # dict mapping indices to their words 
 index_to_word = dict([(value, key) for (key, value) in word_index.items()])
 
-# func to decode a single review with `index_to_word`
-# (a review is a list of integer indices)
-# (offset of i-3 is for [TODO: special symbols in idx 0:2?!])
+# func to decode a single review with `index_to_word` (adapted from DLwP)
+# a review is a list of integer indices
+# offset of i-3 is for reserved chars/idxs -- see DLwP, p73 
 def decode_review(idx_list: List[int]):
   out = ' '.join([index_to_word.get(i-3, '<>') for i in idx_list])
   return re.sub(r'^<> ', '', out)
