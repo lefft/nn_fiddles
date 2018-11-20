@@ -8,3 +8,6 @@ ignore
 reference/chollet2018-DLwP.pdf
 experiments/expt1/results
 experiments/expt1/data/imdb_decoded.csv
+experiments/expt1/data/pruned.word2vec.txt
+experiments/expt1/data/rottentom_kaggle-train.tsv
+experiments/expt1/data/rottentom_phrases_prepped.csv
