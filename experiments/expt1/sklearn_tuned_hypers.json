@@ -1,0 +1,20 @@
+{
+  "LogisticRegression": {
+    "score": 0.8855321776173465,
+    "best_params": {
+      "vect__max_features": null,
+      "clf__penalty": "l2",
+      "clf__tol": 0.001,
+      "clf__C": 0.1,
+      "clf__fit_intercept": false
+    }
+  },
+  "MultinomialNB": {
+    "score": 0.842669528357443,
+    "best_params": {
+      "vect__max_features": null,
+      "clf__alpha": 0.25,
+      "clf__fit_prior": true
+    }
+  }
+}

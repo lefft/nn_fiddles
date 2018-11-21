@@ -25,12 +25,16 @@ TODO:
 
 '''
 
+# for a bunch of sklearn future warnings
+import warnings
+warnings.filterwarnings('ignore')
+
 import json
 import pandas as pd
 
 from functools import partial
 
-from sklearn.svm import SVC
+# from sklearn.svm import SVC #  <-- not converging, replace!
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import CountVectorizer
@@ -58,31 +62,22 @@ dat = imdb_data[imdb_data.subset=='train']
 
 ### 2. define param space grids ----------------------------------------------
 hyper_grids = {
-  # 24 param combos for logreg (*2 from vectorizer = 48)
+  # 36 param combos for logreg (*2 from vectorizer = 72)
   'LogisticRegression': {
-    # 'vect__max_features': (None, 500), # TODO: reintegrate!
+    'vect__max_features': (None, 500), 
     'clf__penalty': ('l1', 'l2'), 
     'clf__tol': (1e-3, 1e-4, 1e-5), 
-    'clf__C': (0.1, 1.0), 
+    'clf__C': (0.01, 0.1, 1.0), 
     'clf__fit_intercept': (True, False)
   }, 
-  # 8 param combos for naive bayes (*2 from vectorizer = 16)
+  # 12 param combos for naive bayes (*2 from vectorizer = 24)
   'MultinomialNB': {
-    # 'vect__max_features': (None, 500), # TODO: reintegrate!
-    'clf__alpha': (0.1, .25, .75, 1.0), 
+    'vect__max_features': (None, 500), 
+    'clf__alpha': (0.1, .25, .5, .75, .9, 1.0), 
     'clf__fit_prior': (True, False)
-  },
-  # 24 param combos for support vector machine (*2 from vectorizer = 48) 
-  # NOTE: better to consider more kernels -- do that if time later 
-  # 'clf__kernel': ('rbf', 'linear', 'poly', 'sigmoid') 
-  'SVC': {
-    # 'vect__max_features': (None, 500), # TODO: reintegrate!
-    'clf__C': (0.1, 1.0), 
-    'clf__kernel': ('rbf', 'sigmoid'), 
-    'clf__shrinking': (True, False), 
-    'clf__tol': (1e-2, 1e-3, 1e-4)
   }
 }
+
 
 
 
@@ -137,7 +132,7 @@ gridsearch_partial = partial(
 
 
 ### 4. search param grid for each clf ----------------------------------------
-classifiers = [SVC, MultinomialNB, LogisticRegression]
+classifiers = [LogisticRegression, MultinomialNB]
 
 optimized_params = {}
 for clf in classifiers:
@@ -158,3 +153,19 @@ with open(optimized_params_outfile, 'w') as f:
   json.dump(optimized_params, f, indent=2)
 
 
+
+
+
+### notes --------------------------------------------------------------------
+
+# NOTE: SVC FITS ARE NOT CONVERGING! SO MUST REMOVE FOR NOW </3
+# 8 param combos for support vector machine (*2 from vectorizer = 48) 
+# note: better to consider more kernels -- do that if time later 
+# 'clf__kernel': ('rbf', 'linear', 'poly', 'sigmoid') 
+# 'SVC': {
+#   # 'vect__max_features': (None, 500), # TODO: reintegrate!
+#   # 'clf__C': (0.1, 1.0), # TODO: reintegrate!
+#   'clf__kernel': ('rbf', 'sigmoid'), 
+#   'clf__shrinking': (True, False), 
+#   'clf__tol': (1e-2, 1e-3) # , 1e-4) # TODO: reintegrate!
+# }
