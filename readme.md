@@ -1,20 +1,13 @@
 ## neural nets fiddle repo `¯\_(ツ)_/¯`
 ###### currently working on expt1 [updated: sept26/2018]
 
-next steps for expt1: 
+final steps for expt1: 
 
-- [ ] develop a few nn models, 
-- [ ] optimize params for sklearn models
 - [ ] tune nn models 
-- [ ] create performance curves 
-
-first steps for expt2: 
-
-- [ ] build datasets 
-- [ ] expt design sketch 
+- [ ] generate performance curves 
 
 
-<br>
+<br><br><br>
 
 - expt1: movie reviews sentiment classification (varying text length) 
 - expt2: topic detection in social media posts (varying train n) 
@@ -28,15 +21,11 @@ first steps for expt2:
 
 #### `TODO`
 
-- [ ] modularize oob script + write cli (see TODO in header)
-- [ ] add keras mods to oob script 
-- [ ] write grid search function 
-- [ ] specify and search param spaces for sklearn models 
-- [ ] figure out tuning for keras models 
+
+- [ ] solifify tuning plan for keras models 
+- [ ] write grid search function for keras sequential
 - [ ] document all code thoroughly 
 - [ ] sketch model evaluation in step 4. below 
-- [ ] ... 
-
 
 
 
@@ -65,8 +54,6 @@ first steps for expt2:
 ###### data 
 
 - `data/imdb_decoded.csv`: prepped data to use for expt1 (should confirm)
-- `rottentom_kaggle-train.tsv`: kaggle rotten tomatoes train subset (for creating practice data)
-- `rottentom_phrases_prepped.csv`: practice data for quick model dev (convenient length variation)
 
 
 

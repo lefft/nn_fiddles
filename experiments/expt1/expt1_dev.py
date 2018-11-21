@@ -4,7 +4,7 @@ Question: how does average text length affect binary classification accuracy
           for different classes of models? 
 
 Classes of models considered: 
-  - Type A: Naive Bayes, SVMs, Logistic Regression 
+  - Type A: Naive Bayes, Logistic Regression 
   - Type B: Feed-forward neural networks 
   - Type C: Recurrent neural networks 
 
@@ -30,8 +30,8 @@ import re
 import keras
 import pandas as pd
 
-import sklearn.svm
 import sklearn.naive_bayes
+import sklearn.linear_model
 
 from functools import reduce
 
@@ -77,6 +77,7 @@ vocab_limit = 10000
 
 
 # specify the class of each classifier 
+# clfclassA = sklearn.linear_model.LogisticRegression
 clfclassA = sklearn.naive_bayes.MultinomialNB
 clfclassB = keras.models.Sequential
 
