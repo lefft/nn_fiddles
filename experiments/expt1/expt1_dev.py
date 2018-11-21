@@ -14,6 +14,13 @@ Notes:
   - for each length-subset, text preprocessing steps are held constant 
   - ... 
 
+Outline:
+  1. load + prep data 
+  2. load tuned hypers for each model class 
+  3. train models over length subsets + generate preds
+  4. postprocess the results and write to file
+
+
 TODO: 
   - fill out typeC classifier class 
   - need to get hypers integrated into output df 
@@ -126,7 +133,7 @@ for lbin in length_bins:
   
   print(f'\n\n*** working on {lbin}th length quartile... ***\n')
   
-  # carve out the subset of the data defined by `lbin` 
+  ## prep subset of the data defined by `lbin` --------------------------
   data = imdb_subsets[lbin]
   train, test = data[data.subset=='train'], data[data.subset=='test']
   
@@ -142,11 +149,6 @@ for lbin in length_bins:
   # create a docs-to-padded-int-seqs transformer (word-idx same as above)
   docpadder = docpadder_factory(txt_train, vocab_limit=vocab_limit)
     
-  # TODO: add 'emb_token_matrix' as a text format! (need a nice util) 
-  # TODO: add loop over keys of x_train/x_test 
-  # TODO: integrate binary and tfidf mode DTMs too! 
-  #          'binary_dtm': DTMizer(txt_train, mode='binary')
-  #          'tfidf_dtm': DTMizer(txt_train, mode='tfidf')
   x_train = {
     'count_dtm': DTMizer(txt_train, mode='count'),
     'padded_tokens': docpadder(txt_train, out_length=maxlen)
@@ -156,6 +158,8 @@ for lbin in length_bins:
     'padded_tokens': docpadder(txt_test, out_length=maxlen)
   }
   
+  
+  ## train each classifier, generate preds, calculate metrics -----------
   
   # instantiate and train typeA classifier 
   clfA = TypeA(clfclassA, **hypersA)
@@ -211,4 +215,48 @@ res = postprocess_results(results, metric_names)
 
 print(res)
 res.to_csv(outfile, index=False)
+
+
+
+
+
+
+
+
+
+
+quit()
+### ABOVE WORKS END-TO-END, NOW CLEANING UP + INTEGRATING INTO BELOW #########
+### ABOVE WORKS END-TO-END, NOW CLEANING UP + INTEGRATING INTO BELOW #########
+### ABOVE WORKS END-TO-END, NOW CLEANING UP + INTEGRATING INTO BELOW #########
+### ABOVE WORKS END-TO-END, NOW CLEANING UP + INTEGRATING INTO BELOW #########
+### ABOVE WORKS END-TO-END, NOW CLEANING UP + INTEGRATING INTO BELOW #########
+### ABOVE WORKS END-TO-END, NOW CLEANING UP + INTEGRATING INTO BELOW #########
+### ABOVE WORKS END-TO-END, NOW CLEANING UP + INTEGRATING INTO BELOW #########
+### ABOVE WORKS END-TO-END, NOW CLEANING UP + INTEGRATING INTO BELOW #########
+### ABOVE WORKS END-TO-END, NOW CLEANING UP + INTEGRATING INTO BELOW #########
+### ABOVE WORKS END-TO-END, NOW CLEANING UP + INTEGRATING INTO BELOW #########
+### 
+### TODO: 
+###   - read hypers from tuned json file
+###   - modularize! 
+###   - get tuned info into keras models
+###   - probably just eliminate the "ClassA/B/C" idea... 
+### 
+
+
+### <<<insert-imports-here>>>
+### 
+### 1. load + prep data ------------------------------------------------------
+### 
+### 2. load tuned hypers for each model class --------------------------------
+### 
+### 3. train models over length subsets + generate preds ---------------------
+### 
+### 4. postprocess the results and write to file -----------------------------
+### 
+
+
+
+
 
