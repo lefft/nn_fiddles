@@ -11,3 +11,4 @@ experiments/expt1/data/imdb_decoded.csv
 experiments/expt1/data/pruned.word2vec.txt
 experiments/expt1/data/rottentom_kaggle-train.tsv
 experiments/expt1/data/rottentom_phrases_prepped.csv
+experiments/expt1/sklearn_tuned_hypers.json

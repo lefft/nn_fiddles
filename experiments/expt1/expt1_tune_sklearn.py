@@ -1,250 +1,160 @@
-'''Experiment 1 (simplified draft)
+'''Optimize hypers for Expt1 sklearn classifiers 
 
-Question: how does average text length affect binary classification accuracy 
-          for different classes of models? 
+Note: started job at 12:03pm...
 
-Classes of models considered: 
-  - Type A: Naive Bayes, SVMs, Logistic Regression 
-  - Type B: Feed-forward neural networks 
-  - Type C: Recurrent neural networks 
 
-Notes: 
-  - all classifiers should use tuned hyper-parameters (grid search elsewhere)
-  - different models require different transformation of input texts 
-  - for each length-subset, text preprocessing steps are held constant 
-  - ... 
+Algorithms:
+  a. LogisticRegression
+  b. MultinomialNB
+  c. SVC
+
+Dataset: 
+  - imdb sentiment (train subset) 
+
+
+Gameplan:
+  1. load + prep data 
+  2. load param space grids 
+  3. write wrapper to search param grids 
+  4. search param grid for each clf 
+  5. extract and write best hypers for each clf 
 
 TODO: 
-  - fill out typeC classifier class 
-  - need to get hypers integrated into output df 
-  - want to get optimized hypers before running this 
-  - take stock of text prep hypers, abstract over (include in grid searches?)
-  - write argparse CLI that takes json of hypers as well as data and clf names
-  - integrate this into postprocessing func(s):
-    clf_names = {'clfA': clfclassA.__name__, 'clfB': clfclassB.__name__}
-  - ... 
+  - integrate searching vectorizer params too! (keep it simple for now)
+  - 
+
 '''
 
-import re
-
-import keras
+import json
 import pandas as pd
 
-import sklearn.svm
-import sklearn.naive_bayes
+from functools import partial
 
-from functools import reduce
+from sklearn.svm import SVC
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.linear_model import LogisticRegression
+from sklearn.feature_extraction.text import CountVectorizer
 
-# TODO: decide if this is even useful or no?!?! (if not, eliminate altogether)
-# classifier classes (A = sklearn interface, B = keras sequential interface)
-from modules.expt1_classes import TypeA, TypeB
-
-# TODO: decide if this is even useful or no?!?! (if not, eliminate altogether)
-# (cd just use keras Tokenizer meths + pad_sequences() instead...) 
-from modules.expt1_util import DTMize_factory, docpadder_factory
-from modules.expt1_util import calculate_binary_clf_metrics
-from modules.expt1_util import prob_to_binary
+from sklearn.pipeline import Pipeline
+from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import StratifiedKFold
 
 
-outfile = 'results/prelim_results-MNBvsFFNN.csv'
+optimized_params_outfile = 'sklearn_tuned_hypers.json'
 
 
 
-### load + prep data ---------------------------------------------------------
+
+### 1. load + prep data ------------------------------------------------------
 imdb_data_fname = 'data/imdb_decoded.csv'
 
 imdb_data = pd.read_csv(imdb_data_fname)
 
-# split data into five subsets, defined by length quartiles 
-imdb_subsets = {lbin: imdb_data[imdb_data.length_bin==lbin] 
-                for lbin in sorted(imdb_data.length_bin.unique())}
-
-
-# check proportions of total for each length bin + train/test 
-# (they should all be close to the same size)
-{**imdb_data.length_bin.value_counts(normalize=True)}
-{**imdb_data.subset.value_counts(normalize=True)}
+# only using the train data in this phase 
+dat = imdb_data[imdb_data.subset=='train']
 
 
 
 
-
-### set global (held constant across fits) and clf-specific params -----------
-
-# global text preprocessing hypers (not all are relevant for all fits) 
-maxlen = 200
-vocab_limit = 10000
-
-
-# specify the class of each classifier 
-clfclassA = sklearn.naive_bayes.MultinomialNB
-clfclassB = keras.models.Sequential
-
-
-# set params for sklearn classifier ("typeA")
-# MNB defaults are (1.0, True) 
-hypersA = {'alpha': .9, 'fit_prior': True}  
-
-
-# set params for neural net taking DTM features ("typeB")
-hypersB = {'config': {'optimizer': 'rmsprop', 
-                      'loss': 'binary_crossentropy', 'metrics': ['accuracy']},
-           'train': {'valset_prop': .25, 'epochs': 5, 'batch_size': 256}}
-
-# for neural nets, also need to supply layer description + params
-layersB = [keras.layers.Dense, keras.layers.Dense, keras.layers.Dense]
-layersB_kwargs = [
-  # params for the input layer ("layer 0")
-  {'units': 16, 'activation': 'relu', 'input_shape': (vocab_limit, )}, 
-  # params for the hidden layer ("layer 1")
-  {'units': 16, 'activation': 'relu'}, 
-  # params for the output layer ("layer 2")
-  {'units': 1, 'activation': 'sigmoid'}]
-
-
-
-# set params for feature-learning neural net ("typeC")
-# TODO!!! # TODO!!! # TODO!!! # TODO!!! # TODO!!! # TODO!!!
-# TODO!!! # TODO!!! # TODO!!! # TODO!!! # TODO!!! # TODO!!!
-# TODO!!! # TODO!!! # TODO!!! # TODO!!! # TODO!!! # TODO!!!
-## clfC = models.Sequential
-## hypersC = {'config': {}, 'train': {}}
-## layersC = []
-## layersC_kwargs = []
-
-
-
-
-### train models over length subsets + generate preds ---------------
-
-length_bins = [0, 1, 2, 3]
-
-results = {}
-
-# for each subset defined by length 
-for lbin in length_bins:
-  
-  print(f'\n\n*** working on {lbin}th length quartile... ***\n')
-  data = imdb_subsets[lbin]
-  train, test = data[data.subset=='train'], data[data.subset=='test']
-
-  print(f'train docs: {len(train)}, test docs: {len(test)}')
-  txt_train, txt_test = [*train.text], [*test.text]
-  y_train, y_test = [*train.label], [*test.label]
-  
-  # create a docs-to-DTM transformer (grab the word-idx mapping too)
-  DTMizer, word_idx = DTMize_factory(
-    txt_train, vocab_limit=vocab_limit, return_word_idx=True)
-  
-  # create a docs-to-padded-int-seqs transformer (word-idx same as above)
-  docpadder = docpadder_factory(txt_train, vocab_limit=vocab_limit)
-    
-  # TODO: add 'emb_token_matrix' as a text format! (need a nice util) 
-  # TODO: add loop over keys of x_train/x_test 
-  # TODO: integrate binary and tfidf mode DTMs too! 
-  #          'binary_dtm': DTMizer(txt_train, mode='binary')
-  #          'tfidf_dtm': DTMizer(txt_train, mode='tfidf')
-  x_train = {
-    'count_dtm': DTMizer(txt_train, mode='count'),
-    'padded_tokens': docpadder(txt_train, out_length=maxlen)
+### 2. define param space grids ----------------------------------------------
+hyper_grids = {
+  # 24 param combos for logreg (*2 from vectorizer = 48)
+  'LogisticRegression': {
+    # 'vect__max_features': (None, 500), # TODO: reintegrate!
+    'clf__penalty': ('l1', 'l2'), 
+    'clf__tol': (1e-3, 1e-4, 1e-5), 
+    'clf__C': (0.1, 1.0), 
+    'clf__fit_intercept': (True, False)
+  }, 
+  # 8 param combos for naive bayes (*2 from vectorizer = 16)
+  'MultinomialNB': {
+    # 'vect__max_features': (None, 500), # TODO: reintegrate!
+    'clf__alpha': (0.1, .25, .75, 1.0), 
+    'clf__fit_prior': (True, False)
+  },
+  # 24 param combos for support vector machine (*2 from vectorizer = 48) 
+  # NOTE: better to consider more kernels -- do that if time later 
+  # 'clf__kernel': ('rbf', 'linear', 'poly', 'sigmoid') 
+  'SVC': {
+    # 'vect__max_features': (None, 500), # TODO: reintegrate!
+    'clf__C': (0.1, 1.0), 
+    'clf__kernel': ('rbf', 'sigmoid'), 
+    'clf__shrinking': (True, False), 
+    'clf__tol': (1e-2, 1e-3, 1e-4)
   }
-  x_test = {
-    'count_dtm': DTMizer(txt_test, mode='count'),
-    'padded_tokens': docpadder(txt_test, out_length=maxlen)
-  }
+}
+
+
+
+
+### 3. write func to search a param grid -------------------------------------
+def search_param_grid(Vectorizer, Classifier, hyper_grid, X, y):
+  '''Search a pipeline hyper-parameter grid, return optimized hypers 
+
+  Params:
+    Vectorizer: an sklearn vectorizer for constructing features from text
+    Classifier: an sklearn classifier with .fit() and .predict() methods
+    hyper_grid: a dict with hyper ranges, in sklearn.pipeline-style fields
+    X: input texts, from which features are constructed
+    y: labels/targets associated with the texts 
+
+  Example:
+    ```
+    search_param_grid(
+      Vectorizer=CountVectorizer, Classifier=MultinomialNB, 
+      hyper_grid={'vect__max_features': (None, 5), 
+                  'clf__alpha': (0, 1.0), 'clf__fit_prior': (True, False)}, 
+      X=dat.text, y=dat.label)
+    ```
+
+  TODO: 
+    - allow the vectorizer params to vary!!!
+
+  '''
+  pipeline = Pipeline([('vect', Vectorizer(max_features=1000)),
+                       ('clf', Classifier())])
   
+  grid_search = GridSearchCV(estimator=pipeline, param_grid=hyper_grid,
+                             cv=StratifiedKFold(n_splits=3, random_state=69),
+                             scoring='f1', n_jobs=-1, verbose=2)
+  grid_search.fit(X, y)
+
+  best_params = grid_search.best_estimator_.get_params()
   
-  # instantiate and train typeA classifier 
-  clfA = TypeA(clfclassA, **hypersA)
-  clfA.train(x_train['count_dtm'], y_train)
+  out = {'score': grid_search.best_score_, 'best_params': {}}
   
-  # instantiate, compile, and train typeB classifier 
-  clfB = TypeB(clfclassB, layersB, layersB_kwargs)
-  clfB.compile_model(**hypersB['config'])
-  clfB.train(x_train['count_dtm'], y_train, **hypersB['train'])
+  for param_name in hyper_grid.keys():
+    out['best_params'][param_name] = best_params[param_name]
   
-  
-  # generate model predictions on test data 
-  predsA = clfA.predict(x_test['count_dtm'])
-  predsB = clfB.predict(x_test['count_dtm'], pred_flattener=prob_to_binary)
-  
-  # calculate, print, and store performance metrics 
-  metricsA = calculate_binary_clf_metrics(y_test, predsA)
-  metricsB = calculate_binary_clf_metrics(y_test, predsB)
-  
-  print(f'results for type-A classifier:\n{metricsA}')
-  print(f'results for type-B classifier:\n{metricsB}')
-  
-  results[f'clfA_bin{lbin}'] = {'metrics': metricsA, 'meta': clfA.clf_info}
-  results[f'clfB_bin{lbin}'] = {'metrics': metricsB, 'meta': clfB.layers_info}
-  
-  print(f'\n\n*** finished {lbin}th length quartile ***\n')
+  return out
+
+
+# and bind the data and vectorizer params, which won't vary (yet!) 
+gridsearch_partial = partial(
+  search_param_grid, Vectorizer=CountVectorizer, X=dat.text, y=dat.label)
 
 
 
 
+### 4. search param grid for each clf ----------------------------------------
+classifiers = [SVC, MultinomialNB, LogisticRegression]
 
-### postprocess the results and write to file --------------------------------
-def results_dict_to_df(results, metric_name):
-  # TODO: want option to name columns (for long-format later) 
-  res = {key: val['metrics'][metric_name] for key, val in results.items()}
-  res_df = pd.DataFrame(res, index=[metric_name]).T
-  res_df.index.name = 'id'
-  res_df.reset_index(inplace=True)
-  return res_df
-
-def postprocess_results(results, metric_names):
-  # TODO: generalize/improve this(?)
-  res_df_list = [results_dict_to_df(results, m) for m in metric_names]
-  metrics_df = reduce(lambda l, r: pd.merge(l, r, on='id'), res_df_list)
-  metrics_df['clf'] = [re.sub('_bin\\d', '', val) for val in metrics_df.id]
-  metrics_df['lbin'] = [re.sub('clf[AB]_', '', val) for val in metrics_df.id]
-  metrics_df = metrics_df[['clf', 'lbin'] + metric_names]
-  return metrics_df
-
-
-metric_names = ['f1', 'precision', 'recall', 'accuracy']
-
-res = postprocess_results(results, metric_names)
-print(res)
-
-res.to_csv(outfile, index=False)
+optimized_params = {}
+for clf in classifiers:
+  clf_name = clf.__name__
+  clf_grid = hyper_grids[clf_name]
+  print(f'\n\n\n*** now searching hypers grid for {clf_name}... ***')
+  optimized_params[clf_name] = gridsearch_partial(Classifier=clf, 
+                                                  hyper_grid=clf_grid)
 
 
 
 
+### 5. extract and write best hypers for each clf ----------------------------
+print(f'done optimizing hypers. results:\n{optimized_params}')
+print(f'writing optimized hypers dict to:\n  >> {optimized_params_outfile}')
+
+with open(optimized_params_outfile, 'w') as f:
+  json.dump(optimized_params, f, indent=2)
 
 
-
-
-
-
-
-metric_names = ['f1', 'precision', 'recall', 'accuracy']
-res_df_list = [results_dict_to_df(results, m) for m in metric_names]
-metrics_df = reduce(lambda l, r: pd.merge(l, r, on='id'), res_df_list)
-
-
-metrics_df['clf'] = [re.sub('_bin\\d', '', val) for val in metrics_df.id]
-metrics_df['lbin'] = [re.sub('clf[AB]_', '', val) for val in metrics_df.id]
-metrics_df = metrics_df[['clf', 'lbin'] + metric_names]
-
-
-results.keys()
-f1s = {key: val['metrics']['f1'] for key, val in results.items()}
-
-f1s = pd.DataFrame(f1s, index=['f1_score']).T
-f1s.index.name = 'clf_lbin'
-f1s.reset_index(inplace=True)
-f1s
-
-# pd.wide_to_long(pd.DataFrame(f1s, index=[0]), 
-#                 stubnames=['clfA', 'clfB'], i=[], j='boosh')
-
-pd.DataFrame(results)
-pd.concat(pd.DataFrame({key: res}) for key, res in results.items())
-# TODO: POSTPROCESS REZ + WRITE TO DISK!!! 
-# TODO: POSTPROCESS REZ + WRITE TO DISK!!! 
-# TODO: POSTPROCESS REZ + WRITE TO DISK!!! 
-# TODO: POSTPROCESS REZ + WRITE TO DISK!!! 
-# TODO: POSTPROCESS REZ + WRITE TO DISK!!! 

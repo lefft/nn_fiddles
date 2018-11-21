@@ -46,11 +46,11 @@ from modules.expt1_util import calculate_binary_clf_metrics
 from modules.expt1_util import prob_to_binary
 
 
-outfile = 'results/prelim_results-MNBvsFFNN.csv'
+outfile = 'results/prelim_results-MNBvsFFNN-2018-11-20.csv'
 
 
 
-### load + prep data ---------------------------------------------------------
+### 1. load + prep data ------------------------------------------------------
 imdb_data_fname = 'data/imdb_decoded.csv'
 
 imdb_data = pd.read_csv(imdb_data_fname)
@@ -69,7 +69,7 @@ imdb_subsets = {lbin: imdb_data[imdb_data.length_bin==lbin]
 
 
 
-### set global (held constant across fits) and clf-specific params -----------
+### 2. set global (held constant across fits) and clf-specific params --------
 
 # global text preprocessing hypers (not all are relevant for all fits) 
 maxlen = 200
@@ -83,7 +83,7 @@ clfclassB = keras.models.Sequential
 
 # set params for sklearn classifier ("typeA")
 # MNB defaults are (1.0, True) 
-hypersA = {'alpha': .9, 'fit_prior': True}  
+hypersA = {'alpha': .9, 'fit_prior': True}
 
 
 # set params for neural net taking DTM features ("typeB")
@@ -115,22 +115,24 @@ layersB_kwargs = [
 
 
 
-### train models over length subsets + generate preds ---------------
-
+### 3. train models over length subsets + generate preds ---------------------
 length_bins = [0, 1, 2, 3]
 
 results = {}
 
-# for each subset defined by length 
+# for each subset defined by length...  
 for lbin in length_bins:
   
   print(f'\n\n*** working on {lbin}th length quartile... ***\n')
+  
+  # carve out the subset of the data defined by `lbin` 
   data = imdb_subsets[lbin]
   train, test = data[data.subset=='train'], data[data.subset=='test']
-
-  print(f'train docs: {len(train)}, test docs: {len(test)}')
+  
   txt_train, txt_test = [*train.text], [*test.text]
   y_train, y_test = [*train.label], [*test.label]
+  
+  print(f'train docs: {len(train)}, test docs: {len(test)}')
   
   # create a docs-to-DTM transformer (grab the word-idx mapping too)
   DTMizer, word_idx = DTMize_factory(
@@ -178,13 +180,13 @@ for lbin in length_bins:
   results[f'clfA_bin{lbin}'] = {'metrics': metricsA, 'meta': clfA.clf_info}
   results[f'clfB_bin{lbin}'] = {'metrics': metricsB, 'meta': clfB.layers_info}
   
-  print(f'\n\n*** finished {lbin}th length quartile ***\n')
+  print(f'\n\n*** finished {lbin+1}th length quartile ***\n')
 
 
 
 
 
-### postprocess the results and write to file --------------------------------
+### 4. postprocess the results and write to file -----------------------------
 def results_dict_to_df(results, metric_name):
   # TODO: want option to name columns (for long-format later) 
   res = {key: val['metrics'][metric_name] for key, val in results.items()}
@@ -204,47 +206,8 @@ def postprocess_results(results, metric_names):
 
 
 metric_names = ['f1', 'precision', 'recall', 'accuracy']
-
 res = postprocess_results(results, metric_names)
-print(res)
 
+print(res)
 res.to_csv(outfile, index=False)
 
-
-
-
-
-
-
-
-
-
-
-metric_names = ['f1', 'precision', 'recall', 'accuracy']
-res_df_list = [results_dict_to_df(results, m) for m in metric_names]
-metrics_df = reduce(lambda l, r: pd.merge(l, r, on='id'), res_df_list)
-
-
-metrics_df['clf'] = [re.sub('_bin\\d', '', val) for val in metrics_df.id]
-metrics_df['lbin'] = [re.sub('clf[AB]_', '', val) for val in metrics_df.id]
-metrics_df = metrics_df[['clf', 'lbin'] + metric_names]
-
-
-results.keys()
-f1s = {key: val['metrics']['f1'] for key, val in results.items()}
-
-f1s = pd.DataFrame(f1s, index=['f1_score']).T
-f1s.index.name = 'clf_lbin'
-f1s.reset_index(inplace=True)
-f1s
-
-# pd.wide_to_long(pd.DataFrame(f1s, index=[0]), 
-#                 stubnames=['clfA', 'clfB'], i=[], j='boosh')
-
-pd.DataFrame(results)
-pd.concat(pd.DataFrame({key: res}) for key, res in results.items())
-# TODO: POSTPROCESS REZ + WRITE TO DISK!!! 
-# TODO: POSTPROCESS REZ + WRITE TO DISK!!! 
-# TODO: POSTPROCESS REZ + WRITE TO DISK!!! 
-# TODO: POSTPROCESS REZ + WRITE TO DISK!!! 
-# TODO: POSTPROCESS REZ + WRITE TO DISK!!! 
