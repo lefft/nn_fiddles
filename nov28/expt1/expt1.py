@@ -26,11 +26,7 @@ TODO:
   - also include clf metrics over the whole dataset for each clf
   - maybe also snag train metrics?!?! (useful for interpretation)
   - integrate plotting of network graphs! [SEE DEV AREA FOR PROGRESS]
-    # need to have access to the model, then can: 
-    from keras.utils import plot_model
-    plot_model(model, to_file='model.png', dpi=300,
-               show_shapes=False, show_layer_names=True, expand_nested=False)
-
+  - specify all in/out shapes, so they're shown in network graphs! 
 '''
 
 import os
@@ -318,7 +314,19 @@ results_df.to_csv(outfiles['results_csv'], index=False)
 
 
 
-### DEV AREA #######################################
+
+
+
+
+
+
+
+quit()
+### DEV AREA!!! ##############################################################
+
+
+### save network graph of each nn's architecture -----------------------------
+# TODO: INTEGRATE THIS INTO ABOVE!!! CURRENTLY DOESNT RUN ON SCRIPT EXECUTE
 from keras.utils import plot_model
 
 def plot_keras_model(clf_key, hyper_dict, out_dir):
@@ -335,15 +343,16 @@ def plot_keras_model(clf_key, hyper_dict, out_dir):
     nn.add(layer(**layer_params))
   nn.compile(**hyper_dict['config'])
   
-  plot_model(nn, to_file=outfile, 
-             show_shapes=False, show_layer_names=True, expand_nested=False)
+  plot_model(nn, to_file=outfile,
+             show_shapes=True, show_layer_names=False)
   print(f'wrote model network graph to file: `{outfile}`')
 
 
 graphs_dir = os.path.join(out_dir, 'nn_graphs')
+os.mkdir(graphs_dir)
 plot_keras_model(clf_key=nn1_key, hyper_dict=nn1_params, out_dir=graphs_dir)
-plot_keras_model(clf_key=nn2_key, hyper_dict=nn2_params, out_dir=out_dir)
-plot_keras_model(clf_key=nn3_key, hyper_dict=nn3_params, out_dir=out_dir)
-plot_keras_model(clf_key=nn4_key, hyper_dict=nn4_params, out_dir=out_dir)
-plot_keras_model(clf_key=nn5_key, hyper_dict=nn5_params, out_dir=out_dir)
+plot_keras_model(clf_key=nn2_key, hyper_dict=nn2_params, out_dir=graphs_dir)
+plot_keras_model(clf_key=nn3_key, hyper_dict=nn3_params, out_dir=graphs_dir)
+plot_keras_model(clf_key=nn4_key, hyper_dict=nn4_params, out_dir=graphs_dir)
+plot_keras_model(clf_key=nn5_key, hyper_dict=nn5_params, out_dir=graphs_dir)
 
