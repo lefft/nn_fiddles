@@ -1,0 +1,170 @@
+{
+  "q0-LogisticRegression": {
+    "f1": 0.88,
+    "accuracy": 0.87,
+    "precision": 0.87,
+    "recall": 0.88
+  },
+  "q0-MultinomialNB": {
+    "f1": 0.86,
+    "accuracy": 0.85,
+    "precision": 0.87,
+    "recall": 0.84
+  },
+  "q0-feedfwd_1hidden": {
+    "f1": 0.874,
+    "accuracy": 0.862,
+    "precision": 0.836,
+    "recall": 0.915
+  },
+  "q0-feedfwd_2hidden": {
+    "f1": 0.866,
+    "accuracy": 0.854,
+    "precision": 0.833,
+    "recall": 0.902
+  },
+  "q0-feedfwd_3hidden": {
+    "f1": 0.863,
+    "accuracy": 0.855,
+    "precision": 0.856,
+    "recall": 0.869
+  },
+  "q0-lstm_1hidden": {
+    "f1": 0.831,
+    "accuracy": 0.832,
+    "precision": 0.877,
+    "recall": 0.789
+  },
+  "q0-lstm_2hidden": {
+    "f1": 0.841,
+    "accuracy": 0.828,
+    "precision": 0.814,
+    "recall": 0.869
+  },
+  "q1-LogisticRegression": {
+    "f1": 0.86,
+    "accuracy": 0.87,
+    "precision": 0.86,
+    "recall": 0.86
+  },
+  "q1-MultinomialNB": {
+    "f1": 0.83,
+    "accuracy": 0.84,
+    "precision": 0.86,
+    "recall": 0.8
+  },
+  "q1-feedfwd_1hidden": {
+    "f1": 0.841,
+    "accuracy": 0.824,
+    "precision": 0.754,
+    "recall": 0.949
+  },
+  "q1-feedfwd_2hidden": {
+    "f1": 0.857,
+    "accuracy": 0.856,
+    "precision": 0.837,
+    "recall": 0.877
+  },
+  "q1-feedfwd_3hidden": {
+    "f1": 0.857,
+    "accuracy": 0.857,
+    "precision": 0.843,
+    "recall": 0.871
+  },
+  "q1-lstm_1hidden": {
+    "f1": 0.814,
+    "accuracy": 0.825,
+    "precision": 0.849,
+    "recall": 0.781
+  },
+  "q1-lstm_2hidden": {
+    "f1": 0.801,
+    "accuracy": 0.795,
+    "precision": 0.764,
+    "recall": 0.842
+  },
+  "q2-LogisticRegression": {
+    "f1": 0.85,
+    "accuracy": 0.85,
+    "precision": 0.85,
+    "recall": 0.85
+  },
+  "q2-MultinomialNB": {
+    "f1": 0.78,
+    "accuracy": 0.8,
+    "precision": 0.83,
+    "recall": 0.74
+  },
+  "q2-feedfwd_1hidden": {
+    "f1": 0.844,
+    "accuracy": 0.851,
+    "precision": 0.866,
+    "recall": 0.823
+  },
+  "q2-feedfwd_2hidden": {
+    "f1": 0.844,
+    "accuracy": 0.851,
+    "precision": 0.86,
+    "recall": 0.829
+  },
+  "q2-feedfwd_3hidden": {
+    "f1": 0.847,
+    "accuracy": 0.852,
+    "precision": 0.856,
+    "recall": 0.839
+  },
+  "q2-lstm_1hidden": {
+    "f1": 0.784,
+    "accuracy": 0.792,
+    "precision": 0.795,
+    "recall": 0.774
+  },
+  "q2-lstm_2hidden": {
+    "f1": 0.783,
+    "accuracy": 0.784,
+    "precision": 0.768,
+    "recall": 0.798
+  },
+  "q3-LogisticRegression": {
+    "f1": 0.85,
+    "accuracy": 0.85,
+    "precision": 0.85,
+    "recall": 0.85
+  },
+  "q3-MultinomialNB": {
+    "f1": 0.78,
+    "accuracy": 0.79,
+    "precision": 0.82,
+    "recall": 0.74
+  },
+  "q3-feedfwd_1hidden": {
+    "f1": 0.859,
+    "accuracy": 0.86,
+    "precision": 0.863,
+    "recall": 0.854
+  },
+  "q3-feedfwd_2hidden": {
+    "f1": 0.866,
+    "accuracy": 0.858,
+    "precision": 0.819,
+    "recall": 0.917
+  },
+  "q3-feedfwd_3hidden": {
+    "f1": 0.866,
+    "accuracy": 0.866,
+    "precision": 0.86,
+    "recall": 0.871
+  },
+  "q3-lstm_1hidden": {
+    "f1": 0.79,
+    "accuracy": 0.78,
+    "precision": 0.752,
+    "recall": 0.833
+  },
+  "q3-lstm_2hidden": {
+    "f1": 0.781,
+    "accuracy": 0.775,
+    "precision": 0.756,
+    "recall": 0.808
+  }
+}

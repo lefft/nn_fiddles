@@ -1,0 +1,87 @@
+{
+  "MultinomialNB": {
+    "alpha": 0.25,
+    "fit_prior": true
+  },
+  "LogisticRegression": {
+    "penalty": "l2",
+    "tol": 0.001,
+    "C": 0.1,
+    "fit_intercept": false
+  },
+  "feedfwd_1hidden": {
+    "layers": "[(<class 'keras.layers.core.Dense'>, {'units': 16, 'activation': 'relu', 'input_shape': (5000,)}), (<class 'keras.layers.core.Dense'>, {'units': 16, 'activation': 'relu'}), (<class 'keras.layers.core.Dense'>, {'units': 1, 'activation': 'sigmoid'})]",
+    "config": {
+      "optimizer": "rmsprop",
+      "loss": "binary_crossentropy",
+      "metrics": [
+        "accuracy"
+      ]
+    },
+    "train": {
+      "validation_split": 0.25,
+      "epochs": 10,
+      "batch_size": 256
+    }
+  },
+  "feedfwd_2hidden": {
+    "layers": "[(<class 'keras.layers.core.Dense'>, {'units': 64, 'activation': 'relu', 'input_shape': (5000,)}), (<class 'keras.layers.core.Dense'>, {'units': 32, 'activation': 'relu'}), (<class 'keras.layers.core.Dense'>, {'units': 16, 'activation': 'relu'}), (<class 'keras.layers.core.Dense'>, {'units': 1, 'activation': 'sigmoid'})]",
+    "config": {
+      "optimizer": "rmsprop",
+      "loss": "binary_crossentropy",
+      "metrics": [
+        "accuracy"
+      ]
+    },
+    "train": {
+      "validation_split": 0.25,
+      "epochs": 10,
+      "batch_size": 256
+    }
+  },
+  "feedfwd_3hidden": {
+    "layers": "[(<class 'keras.layers.core.Dense'>, {'units': 64, 'activation': 'relu', 'input_shape': (5000,)}), (<class 'keras.layers.core.Dense'>, {'units': 32, 'activation': 'relu'}), (<class 'keras.layers.core.Dense'>, {'units': 16, 'activation': 'relu'}), (<class 'keras.layers.core.Dense'>, {'units': 16, 'activation': 'relu'}), (<class 'keras.layers.core.Dense'>, {'units': 1, 'activation': 'sigmoid'})]",
+    "config": {
+      "optimizer": "rmsprop",
+      "loss": "binary_crossentropy",
+      "metrics": [
+        "accuracy"
+      ]
+    },
+    "train": {
+      "validation_split": 0.25,
+      "epochs": 10,
+      "batch_size": 256
+    }
+  },
+  "lstm_1hidden": {
+    "layers": "[(<class 'keras.layers.embeddings.Embedding'>, {'input_dim': 5000, 'output_dim': 100}), (<class 'keras.layers.recurrent.LSTM'>, {'units': 100, 'dropout': 0.2, 'recurrent_dropout': 0.2}), (<class 'keras.layers.core.Dense'>, {'units': 1, 'activation': 'sigmoid'})]",
+    "config": {
+      "optimizer": "adam",
+      "loss": "binary_crossentropy",
+      "metrics": [
+        "accuracy"
+      ]
+    },
+    "train": {
+      "validation_split": 0.25,
+      "epochs": 10,
+      "batch_size": 256
+    }
+  },
+  "lstm_2hidden": {
+    "layers": "[(<class 'keras.layers.embeddings.Embedding'>, {'input_dim': 5000, 'output_dim': 100}), (<class 'keras.layers.recurrent.LSTM'>, {'units': 100, 'return_sequences': True}), (<class 'keras.layers.recurrent.LSTM'>, {'units': 100, 'dropout': 0.2, 'recurrent_dropout': 0.2}), (<class 'keras.layers.core.Dense'>, {'units': 1, 'activation': 'sigmoid'})]",
+    "config": {
+      "optimizer": "adam",
+      "loss": "binary_crossentropy",
+      "metrics": [
+        "accuracy"
+      ]
+    },
+    "train": {
+      "validation_split": 0.25,
+      "epochs": 10,
+      "batch_size": 256
+    }
+  }
+}
