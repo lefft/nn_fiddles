@@ -23,10 +23,12 @@ final steps for expt1:
 
 
 - [ ] solifify tuning plan for keras models 
-- [ ] write grid search function for keras sequential
+- [ ] write grid search function(s) for keras sequential models
+- [ ] write nn grid search script 
 - [ ] document all code thoroughly 
 - [ ] sketch model evaluation in step 4. below 
-
+- [ ] add `sklearn.linear_model.SGDClassifier` to skl algos space 
+- [ ] expand sklearn grid search + rerun (bigger param space, add sgd) 
 
 
 

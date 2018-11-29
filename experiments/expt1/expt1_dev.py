@@ -98,6 +98,8 @@ hypersA = {'alpha': .9, 'fit_prior': True}
 hypersB = {'config': {'optimizer': 'rmsprop', 
                       'loss': 'binary_crossentropy', 'metrics': ['accuracy']},
            'train': {'valset_prop': .25, 'epochs': 5, 'batch_size': 256}}
+### TODO: SHOULD BE validation_split, NOT valset_prop -- FIXXXE BEFORE ANYTHING ALSE!!!
+
 
 # for neural nets, also need to supply layer description + params
 layersB = [keras.layers.Dense, keras.layers.Dense, keras.layers.Dense]
