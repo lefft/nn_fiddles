@@ -12,12 +12,13 @@
 #   - apply this to another dataset 
 #   - configure y-axis automatically!
 #   - combine color and shape legends!!! 
+#   - only want int x-axis ticks! (for sent140, [0,1] not [0,.25,.5,...])
 
 library(magrittr)
 library(ggplot2)
 
 
-run_id <- 'dec03-05'
+run_id <- 'dec04-sent140-01'
 results_dir <- file.path('results', run_id)
 
 
